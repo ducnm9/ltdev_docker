@@ -19,6 +19,7 @@ services:
       - ./nginx/log:/var/log/nginx
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./src:/usr/www/html
+      - /Volumes/WORK/PROJECTS/EBIT/src:/usr/www/src
     environment:
       - ENABLE_IPV6=true
     restart: always
