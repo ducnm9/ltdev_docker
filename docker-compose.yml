@@ -33,6 +33,7 @@ services:
     container_name: lt_php_fpm
     volumes:
       - ./src:/usr/www/html
+      - /Volumes/WORK/PROJECTS/EBIT/src:/usr/www/src
     depends_on:
         - mysql
 

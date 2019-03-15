@@ -14,6 +14,36 @@ server {
         access_log off;
     }
 
+    include /etc/nginx/conf.d/security/banned.conf
+
+    location /wp-login.php {
+        auth_basic "Administrator Login";
+        auth_basic_user_file /etc/nginx/conf.d/security/.htpwd;
+        include fastcgi_params;
+        fastcgi_pass phpfpm:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location /wp-admin {
+            #location ~ ^/(wp-admin/admin-ajax\.php) {
+            #
+            #}
+            location ~* /wp-admin/.*\.php$ {
+                    auth_basic "Administrator Login";
+                    auth_basic_user_file /etc/nginx/conf.d/security/.htpwd;
+
+                    fastcgi_intercept_errors on;
+                    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                    fastcgi_pass phpfpm:9000;
+                    fastcgi_index  index.php;
+                    fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                    include        fastcgi_params;
+                    fastcgi_read_timeout 300;
+                    client_body_buffer_size 5M;
+            }
+    }
+
+
     location = /robots.txt {
         allow all;
         log_not_found off;
@@ -37,7 +67,7 @@ server {
         # ENABLE : Enable PHP, listen fpm sock
         fastcgi_intercept_errors on;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass    phpfpm:9000;
+        fastcgi_pass   phpfpm:9000;
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include        fastcgi_params;
