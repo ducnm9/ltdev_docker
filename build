@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+docker image build -t laptrinhcomvn/phpenv:0.1.0 -f ./0.Dockerfile_env .
+
+docker image build -t laptrinhcomvn/php73:0.1.0 -f 1.Dockerfile_php73 .
+
+cd nginx
+docker image build -t laptrinhcomvn/php-nginx73:0.1.0 -t laptrinhcomvn/php-nginx73:latest -f 2.Dockerfile-nginx-php73 .
+
+# push image
+docker image push laptrinhcomvn/php-nginx73:0.1.0
+docker image push laptrinhcomvn/php-nginx73:latest

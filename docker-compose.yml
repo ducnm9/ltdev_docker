@@ -1,54 +1,35 @@
 version: '3'
 
 services:
-  #redis:
-  #  image: redis:alpine
-  #  container_name: lt_redis
-  #  restart: always
-  #  ports:
-  #    - "6379:6379"
-
-  nginx:
-    build: ./nginx
-    image: laptrinhcomvn/nginx_alpine:1.15.9
-    container_name: lt_nginx
+  php-nginx:
+    image: laptrinhcomvn/php-nginx73:latest
+    container_name: lt_php_nginx
+    environment:
+      - ENABLE_IPV6=true
+    restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/log:/var/log/nginx
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./src:/usr/www/html
-      - /Volumes/WORK/PROJECTS/EBIT/src:/usr/www/src
-    environment:
-      - ENABLE_IPV6=true
-    restart: always
+    #  - ./nginx/log:/var/log/nginx
+    #  - ./nginx/conf.d:/etc/nginx/conf.d
+    #  - ./src:/usr/www/html
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - /Volumes/WORK/PROJECTS/MCLASS/SRC/mclass.vn.conf:/etc/nginx/sites-enabled/mclass.vn.conf
+      - /Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_v1.2:/usr/www/src/mclass
     depends_on:
-      - phpfpm
       - mysql
 
-  phpfpm:
-    build: ./php
-    image: laptrinhcomvn/php_fpm_alpine:7.3.2
-    container_name: lt_php_fpm
-    volumes:
-      - ./src:/usr/www/html
-      - /Volumes/WORK/PROJECTS/EBIT/src:/usr/www/src
-    depends_on:
-        - mysql
-
-
   mysql:
-    build: ./mysql
-    image: laptrinhcomvn/mysql:8.0.15
+    image: mysql:8.0.15
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     container_name: lt_mysql
     environment:
       - MYSQL_ROOT_PASSWORD=TVUhnqbgL6kTZ4VT
     volumes:
-      - ./mysql/data:/var/lib/mysql
       - ./mysql/mysql_cnf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/data:/var/lib/mysql
     ports:
       - '3306:3306'
 
